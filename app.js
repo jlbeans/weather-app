@@ -2,7 +2,7 @@
 const container = document.querySelector('.container');
 const units = document.querySelector('.units');
 
-function getUnits() {
+function getUnit() {
 	if (units.classList.contains('c')) {
 		return 'c';
 	}
@@ -19,20 +19,31 @@ function loadCard() {
 	return card;
 }
 
-function displayTemp(fTemp, cTemp) {
-	const tempUnit = getUnits();
-	const card = loadCard();
+function whichTempUnit(fTemp, cTemp) {
+	const tempUnit = getUnit();
 	if (tempUnit === 'f') {
-		card.textContent = `${fTemp}\u00B0F`;
-	} else {
-		card.textContent = `${cTemp}\u00B0C`;
+		return `${fTemp}\u00B0F`;
 	}
+	return `${cTemp}\u00B0C`;
+
+	/* const windDiv = document.createElement('div');
+	windDiv.textContent = `Wind: ${wind}mph`;
+	const moistureDiv = document.createElement('div');
+	moistureDiv.textContent = `Humidity: ${moisture}%`;
+	const cloudDiv = document.createElement('div');
+	cloudDiv.textContent = `Cloudiness: ${cloudiness}%`;
+	card.append(windDiv);
+	card.append(moistureDiv);
+	card.append(cloudDiv); */
 }
 
-function getTemperatureData(data) {
-	const fTemp = data.current.temp_f;
-	const cTemp = data.current.temp_c;
-	displayTemp(fTemp, cTemp);
+function displayWeatherData(fTemp, cTemp, wind, moisture, cloudiness) {
+	const card = loadCard();
+	const temp = whichTempUnit(fTemp, cTemp);
+	card.innerHTML = `<p>${temp}</p>
+                    <p>Wind: ${wind}mph</p>
+                    <p>Humidity: ${moisture}%</p>
+                    <p>Cloudiness: ${cloudiness}%</p>`;
 }
 
 async function getWeatherData(input) {
@@ -41,8 +52,13 @@ async function getWeatherData(input) {
 			`http://api.weatherapi.com/v1/current.json?key=9a1a942742804fbcb9a214740232604&q=${input}`,
 			{ mode: 'cors' }
 		);
-		const weatherData = await response.json();
-		getTemperatureData(weatherData);
+		const data = await response.json();
+		const fTemp = data.current.temp_f;
+		const cTemp = data.current.temp_c;
+		const wind = data.current.wind_mph;
+		const moisture = data.current.humidity;
+		const cloudiness = data.current.cloud;
+		displayWeatherData(fTemp, cTemp, wind, moisture, cloudiness);
 	} catch (error) {
 		console.log(error);
 	}
@@ -56,7 +72,7 @@ form.addEventListener('submit', (e) => {
 	getWeatherData(location);
 });
 
-function setUnits(event) {
+function setUnit(event) {
 	if (event.target.className === 'f') {
 		units.classList.add('f');
 		units.classList.remove('c');
@@ -67,6 +83,6 @@ function setUnits(event) {
 }
 
 const fBtn = document.querySelector('#f-unit');
-fBtn.addEventListener('click', setUnits);
+fBtn.addEventListener('click', setUnit);
 const cBtn = document.querySelector('#c-unit');
-cBtn.addEventListener('click', setUnits);
+cBtn.addEventListener('click', setUnit);
