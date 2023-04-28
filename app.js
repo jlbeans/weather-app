@@ -25,21 +25,26 @@ function whichTempUnit(fTemp, cTemp) {
 		return `${fTemp}\u00B0F`;
 	}
 	return `${cTemp}\u00B0C`;
+}
 
-	/* const windDiv = document.createElement('div');
-	windDiv.textContent = `Wind: ${wind}mph`;
-	const moistureDiv = document.createElement('div');
-	moistureDiv.textContent = `Humidity: ${moisture}%`;
-	const cloudDiv = document.createElement('div');
-	cloudDiv.textContent = `Cloudiness: ${cloudiness}%`;
-	card.append(windDiv);
-	card.append(moistureDiv);
-	card.append(cloudDiv); */
+function whichImage(cloudiness) {
+	if (cloudiness <= 10) {
+		return 'sunny';
+	}
+	if (cloudiness <= 50) {
+		return 'partly-cloudy';
+	}
+	if (cloudiness <= 90) {
+		return 'mostly-cloudy';
+	}
+	return 'cloudy';
 }
 
 function displayWeatherData(fTemp, cTemp, wind, moisture, cloudiness) {
 	const card = loadCard();
 	const temp = whichTempUnit(fTemp, cTemp);
+	const background = whichImage(cloudiness);
+	card.style.backgroundImage = `url(./images/${background}.jpeg)`;
 	card.innerHTML = `<p>${temp}</p>
                     <p>Wind: ${wind}mph</p>
                     <p>Humidity: ${moisture}%</p>
